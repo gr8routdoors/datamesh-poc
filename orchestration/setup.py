@@ -11,7 +11,10 @@ setup(
         # "dagster-duckdb",
         # "dagster-duckdb-pandas",
         "dagster-dbt",
-        "dagster-embedded-elt", # DLT
+        "dagster-embedded-elt", # DLT (the dependencies below came from dlt/requirements.txt)
+        "sqlalchemy>=1.4",      # DLT Postgres (or any SQL) source
+        "psycopg2-binary",      # Sqlalchemy driver for Postgres
+        "dlt[duckdb]>=0.4.11",  # DLT DuckDB destination
     ],
     extras_require={
         "dev": [

@@ -33,6 +33,9 @@ cd orchestration
 ```
 
 ### Startup the data stores
+
+First, edit `orchestration/.env` and `dlt/.dlt/secrets.toml` to the values you desire.
+
 ```
 # Load up the pwd .env vars
 direnv allow
@@ -63,6 +66,23 @@ dagster project scaffold --name core_data
 pipx uninstall dagster
 # Dagster will nest under a directory of the same name by default, change the parent directory to orchestration
 mv core_data orchestration
+cd orchestration
+# Create the dlt project
+mkdir dlt
+cd dlt
+dlt init sql_database duckdb
+# Move the destination into Dagster so it can become an asset
+cd ..
+mv dlt/sql_database core_data/postgres
+# Manual: move the dependencies from dlt/requirements.txt into setup.py
+# Add dlt dependencies
+pip install -e ".[dev]"
+# Manual: place DLT secrets into .env file
+# Get rid of unused requirements.txt and .dlt config files to avoid confusion
+rm requirements.txt
+rm -rf dlt/.dlt
+# Manual: wire in environment variables into core_data/assets.py, as the env var integration between dagster and dlt not auto-magically working ATM
+
 ```
 
 

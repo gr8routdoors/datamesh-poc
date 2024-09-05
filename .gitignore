@@ -1,2 +1,6 @@
+# ignore basic python artifacts
 .venv
-orchestration/core_data.egg-info
+**/.env
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
