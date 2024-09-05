@@ -1,0 +1,120 @@
+# Proof of Concept for ELT using Dagster, DLT and DBT
+
+This proof-of-concept illustrates the use of Dagster, Data Load Tool (DLT) for performing extract and load, and Data Build Tool (DBT) for performing post load transforms.
+
+It uses DuckDB to back the data lake, but this can easily be swapped to anything supported as both a:
+    * [DLT destination](https://dlthub.com/docs/dlt-ecosystem/destinations/)
+    * DBT adapter - [trusted](https://docs.getdbt.com/docs/trusted-adapters) or [community](https://docs.getdbt.com/docs/community-adapters)
+
+## Dev Environment Setup
+
+### Install the essentials
+
+Note that pyenv, pipx, and direnv are merely suggestion for multiple python versions, python executable isolation, and env var setting convenience.  Feel free to choose whatever you prefer:
+```
+brew install docker tofu python pyenv pipx direnv
+# If you installed direnv, make sure to enable for your shell: https://direnv.net/docs/hook.html
+# Enable .env files with direnv
+mkdir -p ~/.config/direnv
+echo "[global]\nload_dotenv = "true"\n" >~/.config/direnv/direnv.toml
+
+# This block is optional
+pyenv install 3.12
+pyenv global 3.12
+# you may need to setup your shell for pyenv as described here: https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+pipx ensurepath
+
+# Setup a python virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# orchestration will be pwd going forward
+cd orchestration
+```
+
+### Startup the data stores
+```
+# Load up the pwd .env vars
+direnv allow
+# See docker-compose.yml for details
+docker-compose up
+```
+
+### TODO: Seed data to postgres using faker-cli
+
+### Start Dagster
+
+```
+# Install dev dependencies for the current directory, making them editable so we can see changes immediately
+pip install -e ".[dev]"
+# Starts dagster dev environment on http://localhost:3000
+dagster dev
+```
+
+## Addtional Commands For Reference
+
+The following were used to bootstrap the project (no need to run them again):
+```
+# Install dagster CLI
+pipx install dagster --python 3.12
+# Scaffold dagster project
+dagster project scaffold --name core_data
+# Uninstall dagster CLI so we can reinstall a version locked with all of its other dependencies
+pipx uninstall dagster
+# Dagster will nest under a directory of the same name by default, change the parent directory to orchestration
+mv core_data orchestration
+```
+
+
+
+##########################################################################################################
+##########################################################################################################
+##########################################################################################################
+##########################################################################################################
+# orchestration
+
+This is a [Dagster](https://dagster.io/) project scaffolded with [`dagster project scaffold`](https://docs.dagster.io/getting-started/create-new-project).
+
+## Getting started
+
+First, install your Dagster code location as a Python package. By using the --editable flag, pip will install your Python package in ["editable mode"](https://pip.pypa.io/en/latest/topics/local-project-installs/#editable-installs) so that as you develop, local code changes will automatically apply.
+
+```bash
+pip install -e ".[dev]"
+```
+
+Then, start the Dagster UI web server:
+
+```bash
+dagster dev
+```
+
+Open http://localhost:3000 with your browser to see the project.
+
+You can start writing assets in `orchestration/assets.py`. The assets are automatically loaded into the Dagster code location as you define them.
+
+## Development
+
+### Adding new Python dependencies
+
+You can specify new Python dependencies in `setup.py`.
+
+### Unit testing
+
+Tests are in the `orchestration_tests` directory and you can run tests using `pytest`:
+
+```bash
+pytest orchestration_tests
+```
+
+### Schedules and sensors
+
+If you want to enable Dagster [Schedules](https://docs.dagster.io/concepts/partitions-schedules-sensors/schedules) or [Sensors](https://docs.dagster.io/concepts/partitions-schedules-sensors/sensors) for your jobs, the [Dagster Daemon](https://docs.dagster.io/deployment/dagster-daemon) process must be running. This is done automatically when you run `dagster dev`.
+
+Once your Dagster Daemon is running, you can start turning on schedules and sensors for your jobs.
+
+## Deploy on Dagster Cloud
+
+The easiest way to deploy your Dagster project is to use Dagster Cloud.
+
+Check out the [Dagster Cloud Documentation](https://docs.dagster.cloud) to learn more.
