@@ -9,11 +9,13 @@ from dlt_sources.sql_database import sql_database
 from dlt_sources.dbt_dlt_translator import CanonicalDagsterDltTranslator
 
 # We wire this up manually so that we can support multiple sources of the same type
-source_driver_name   = os.getenv("SOURCES__POC_DB__CREDENTIALS__DRIVERNAME")
+group_name           = "bronze"
 db_name              = os.getenv("SOURCES__POC_DB__CREDENTIALS__DATABASE")
 schema_name          = os.getenv("SOURCES__POC_DB__CREDENTIALS__SCHEMA")
-postgres_credentials = {
-    "drivername": source_driver_name,
+
+source_name          = os.getenv("SOURCES__POC_DB__CREDENTIALS__DRIVERNAME")
+source_credentials   = {
+    "drivername": source_name,
     "database":   db_name,
     "username":   os.getenv("SOURCES__POC_DB__CREDENTIALS__USERNAME"),
     "password":   os.getenv("SOURCES__POC_DB__CREDENTIALS__PASSWORD"),
@@ -21,24 +23,24 @@ postgres_credentials = {
     "port":       os.getenv("SOURCES__POC_DB__CREDENTIALS__PORT"),
 }
 
-lake_name        = "lake"
-lake_credentials = os.getenv("DESTINATION__LAKE__CREDENTIALS")
-lake_destination = duckdb(credentials=lake_credentials)
+destination_name        = "lake"
+destination_credentials = os.getenv("DESTINATION__LAKE__CREDENTIALS")
+destination             = duckdb(credentials=destination_credentials)
 
 @dlt_assets(
     dlt_source=sql_database(
-        credentials=postgres_credentials,
+        credentials=source_credentials,
         schema=schema_name,
     ),
     dlt_pipeline=pipeline(
-        pipeline_name=f"{schema_name}_ingest",
+        pipeline_name=f"{db_name}__{schema_name}__{group_name}",
         dataset_name=schema_name,
-        destination=lake_destination,
+        destination=destination,
         progress="log",
     ),
-    name=schema_name,
-    group_name="bronze",
-    dagster_dlt_translator=CanonicalDagsterDltTranslator(source_driver_name, lake_name, db_name, schema_name)
+    name=f"{db_name}__{schema_name}__{group_name}",
+    group_name=group_name,
+    dagster_dlt_translator=CanonicalDagsterDltTranslator(source_name, destination_name, db_name, schema_name)
 )
 
 def dlt_asset_factory(context: AssetExecutionContext, dlt: DagsterDltResource):

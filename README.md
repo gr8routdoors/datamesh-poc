@@ -43,8 +43,6 @@ direnv allow
 docker-compose up
 ```
 
-### TODO: Seed data to postgres using faker-cli
-
 ### Start Dagster
 
 ```
@@ -60,30 +58,37 @@ The following were used to bootstrap the project (no need to run them again):
 ```
 # Install dagster CLI
 pipx install dagster --python 3.12
+
 # Scaffold dagster project
 dagster project scaffold --name core_data
+
 # Uninstall dagster CLI so we can reinstall a version locked with all of its other dependencies
 pipx uninstall dagster
 # Dagster will nest under a directory of the same name by default, change the parent directory to orchestration
 mv core_data orchestration
 cd orchestration
-# Create the dlt project
-mkdir dlt
-cd dlt
-dlt init sql_database duckdb
-# Move the destination into Dagster so it can become an asset
-cd ..
-mv dlt/sql_database core_data/postgres
-# Manual: move the dependencies from dlt/requirements.txt into setup.py
-# Add dlt dependencies
-pip install -e ".[dev]"
-# Manual: place DLT secrets into .env file
-# Get rid of unused requirements.txt and .dlt config files to avoid confusion
-rm requirements.txt
-rm -rf dlt/.dlt
-# Manual: wire in environment variables into core_data/assets.py, as the env var integration between dagster and dlt not auto-magically working ATM
 
+# Create the DLT definitions
+mkdir dlt_sources
+cd dlt_sources
+dlt init chess postgres
+dlt init sql_database duckdb
+# Manual: move the dependencies from dlt/requirements.txt into setup.py
+# Manual: port DLT secrets.tom into .env file, and then wire into Dagster assets
+
+# Get rid of unused DLT files to avoid confusion
+rm requirements.txt
+rm -rf .dlt
+rm *.py
+
+# Install dlt dependencies
+cd ..
+pip install -e ".[dev]"
 ```
+
+## Helpful Tools
+
+    * faker-cli: `pipx install faker-cli`
 
 
 
