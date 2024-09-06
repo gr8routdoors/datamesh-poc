@@ -1,19 +1,15 @@
 from dagster import Definitions, load_assets_from_modules
-from dagster_embedded_elt.dlt import DagsterDltResource
 
-from . import assets
+from .assets import poc_ecom
+from .resources import dlt_resource
 
-# TODO: re-enable auto-asset discovery
-# all_assets = load_assets_from_modules([assets])
-# all_assets.extend(assets.dlt_assets)
-
-dlt_resources = DagsterDltResource()
+# poc_ecom_assets = load_assets_from_modules([poc_ecom])
 
 defs = Definitions(
     assets    = [
-        assets.dlt_assets
+        poc_ecom.dlt_asset_factory
     ],
     resources = {
-        "dlt": dlt_resources,
+        "dlt": dlt_resource,
     }
 )
