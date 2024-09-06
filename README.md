@@ -6,6 +6,11 @@ It uses DuckDB to back the data lake, but this can easily be swapped to anything
     * [DLT destination](https://dlthub.com/docs/dlt-ecosystem/destinations/)
     * DBT adapter - [trusted](https://docs.getdbt.com/docs/trusted-adapters) or [community](https://docs.getdbt.com/docs/community-adapters)
 
+## Project Layout
+
+* `orchestration`: the dagster project
+* `orchestration/dlt_sources`: the dlt project (with unnecessary config files managed by dagger ommitted)
+
 ## Dev Environment Setup
 
 ### Install the essentials
@@ -52,6 +57,8 @@ pip install -e ".[dev]"
 dagster dev
 ```
 
+You can not use the dagster UX to materialize seed data for the postgres OLTP data store from the chess API.  Once that is done, you can refresh assets to then load that same data into the data lake.
+
 ## Addtional Commands For Reference
 
 The following were used to bootstrap the project (no need to run them again):
@@ -59,7 +66,7 @@ The following were used to bootstrap the project (no need to run them again):
 # Install dagster CLI
 pipx install dagster --python 3.12
 
-# Scaffold dagster project
+# Scaffold dagster project - https://docs.dagster.io/getting-started/create-new-project
 dagster project scaffold --name core_data
 
 # Uninstall dagster CLI so we can reinstall a version locked with all of its other dependencies
@@ -86,39 +93,11 @@ cd ..
 pip install -e ".[dev]"
 ```
 
-## Helpful Tools
-
-    * faker-cli: `pipx install faker-cli`
-
-
-
-##########################################################################################################
-##########################################################################################################
-##########################################################################################################
-##########################################################################################################
-# orchestration
-
-This is a [Dagster](https://dagster.io/) project scaffolded with [`dagster project scaffold`](https://docs.dagster.io/getting-started/create-new-project).
-
-## Getting started
-
-First, install your Dagster code location as a Python package. By using the --editable flag, pip will install your Python package in ["editable mode"](https://pip.pypa.io/en/latest/topics/local-project-installs/#editable-installs) so that as you develop, local code changes will automatically apply.
-
-```bash
-pip install -e ".[dev]"
-```
-
-Then, start the Dagster UI web server:
-
-```bash
-dagster dev
-```
+## Development
 
 Open http://localhost:3000 with your browser to see the project.
 
 You can start writing assets in `orchestration/assets.py`. The assets are automatically loaded into the Dagster code location as you define them.
-
-## Development
 
 ### Adding new Python dependencies
 
@@ -143,3 +122,6 @@ Once your Dagster Daemon is running, you can start turning on schedules and sens
 The easiest way to deploy your Dagster project is to use Dagster Cloud.
 
 Check out the [Dagster Cloud Documentation](https://docs.dagster.cloud) to learn more.
+
+## Helpful Tools
+    * faker-cli: `pipx install faker-cli`

@@ -1,2 +1,5 @@
 # ignore basic python artifacts
 core_data.egg-info
+
+# dagster temp files
+tmp*

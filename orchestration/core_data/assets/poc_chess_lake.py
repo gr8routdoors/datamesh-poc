@@ -1,6 +1,6 @@
 import os
 
-from dagster import AssetExecutionContext, Definitions
+from dagster import AssetExecutionContext, SourceAsset
 from dagster_embedded_elt.dlt import DagsterDltResource, dlt_assets
 from dlt import pipeline
 from dlt.destinations import duckdb
@@ -9,6 +9,7 @@ from dlt_sources.sql_database import sql_database
 from dlt_sources.dbt_dlt_translator import CanonicalDagsterDltTranslator
 
 # We wire this up manually so that we can support multiple sources of the same type
+source_group_name    = "oltp"
 group_name           = "bronze"
 db_name              = os.getenv("SOURCES__POC_DB__CREDENTIALS__DATABASE")
 schema_name          = os.getenv("SOURCES__POC_DB__CREDENTIALS__SCHEMA")
@@ -45,3 +46,7 @@ destination             = duckdb(credentials=destination_credentials)
 
 def dlt_asset_factory(context: AssetExecutionContext, dlt: DagsterDltResource):
     yield from dlt.run(context=context)
+
+chess_lake_assets = [
+    SourceAsset(key, group_name=source_group_name) for key in dlt_asset_factory.dependency_keys
+]
