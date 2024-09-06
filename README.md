@@ -17,7 +17,7 @@ It uses DuckDB to back the data lake, but this can easily be swapped to anything
 
 Note that pyenv, pipx, and direnv are merely suggestion for multiple python versions, python executable isolation, and env var setting convenience.  Feel free to choose whatever you prefer:
 ```
-brew install docker tofu python pyenv pipx direnv
+brew install docker tofu python duckdb pyenv pipx direnv
 # If you installed direnv, make sure to enable for your shell: https://direnv.net/docs/hook.html
 # Enable .env files with direnv
 mkdir -p ~/.config/direnv
@@ -44,7 +44,12 @@ First, edit `orchestration/.env` and `dlt/.dlt/secrets.toml` to the values you d
 ```
 # Load up the pwd .env vars
 direnv allow
-# See docker-compose.yml for details
+# Create the bronze schema in duckdb
+duckdb /tmp/poc.duckdb
+CREATE SCHEMA bronze;
+.exit
+
+# Startup postgres
 docker-compose up
 ```
 

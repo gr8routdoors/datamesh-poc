@@ -11,6 +11,7 @@ setup(
         "dagster-duckdb",
         "dagster-duckdb-pandas",
         "dagster-dbt",
+        "pydantic==2.8.2",               # Version lock pydantica because 2.9.0 (the current release) breaks Dagster
         "dagster-embedded-elt",         # DLT (the dependencies below came from dlt/requirements.txt)
         "dlt[duckdb,postgres]>=0.4.11", # DLT with destinations
         "sqlalchemy>=1.4",              # DLT SQL DB source
@@ -18,8 +19,8 @@ setup(
     ],
     extras_require={
         "dev": [
-            "dagster-webserver", # local Dagster
-            "pytest",            # python tests
+            "dagster-webserver",   # local Dagster
+            "pytest",              # python tests
             # "localstack",        # lets us emulate AWS services (S3)
             # "awscli",            # AWS CLI
             # "awscli-local",      # awslocal CLI (support for localstack)

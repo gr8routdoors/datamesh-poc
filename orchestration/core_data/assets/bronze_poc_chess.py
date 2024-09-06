@@ -12,6 +12,7 @@ db_name              = os.getenv("SOURCES__POC_DB__CREDENTIALS__DATABASE")
 schema_name          = os.getenv("SOURCES__POC_DB__CREDENTIALS__SCHEMA")
 lake_schema_name     = "bronze"
 
+# The dependencies for these assets come from DLT in oltp_poc_chess.py
 
 players_profiles = f"{source_name}__{db_name}__{schema_name}__players_profiles"
 @asset(
