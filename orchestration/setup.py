@@ -8,8 +8,8 @@ setup(
         "dbt-duckdb",
         "dagster",
         "dagster-cloud",
-        # "dagster-duckdb",
-        # "dagster-duckdb-pandas",
+        "dagster-duckdb",
+        "dagster-duckdb-pandas",
         "dagster-dbt",
         "dagster-embedded-elt",         # DLT (the dependencies below came from dlt/requirements.txt)
         "dlt[duckdb,postgres]>=0.4.11", # DLT with destinations

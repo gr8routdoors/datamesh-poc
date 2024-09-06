@@ -1,6 +1,10 @@
+# This can be used when we no longer are seeding the data using DLT
+# e.g. for ingesting data from an already populated datbase
+# Unfotunately, we cannot use it now due to errors we get from using the same AssetKey
+
 import os
 
-from dagster import AssetExecutionContext, SourceAsset
+from dagster import AssetExecutionContext, os.getenv, SourceAsset
 from dagster_embedded_elt.dlt import DagsterDltResource, dlt_assets
 from dlt import pipeline
 from dlt.destinations import duckdb
