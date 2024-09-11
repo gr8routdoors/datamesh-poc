@@ -53,6 +53,16 @@ CREATE SCHEMA bronze;
 docker-compose up
 ```
 
+### Seed OLTP source data
+
+We use the chess.com dataset, since it is provided as a native source by DLT, but just as easily could use
+any open source REST API (via OpenAPI source) or dataset
+
+```
+# From the orchestration directory:
+python3 dlt_sources/pipeline_oltp_poc_chess.py
+```
+
 ### Start Dagster
 
 ```

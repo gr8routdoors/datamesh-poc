@@ -21,6 +21,7 @@ setup(
         "dev": [
             "dagster-webserver",   # local Dagster
             "pytest",              # python tests
+            "debugpy",             # python debugger
             # "localstack",        # lets us emulate AWS services (S3)
             # "awscli",            # AWS CLI
             # "awscli-local",      # awslocal CLI (support for localstack)
