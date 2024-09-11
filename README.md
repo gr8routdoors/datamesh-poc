@@ -35,6 +35,8 @@ source .venv/bin/activate
 
 # orchestration will be pwd going forward
 cd orchestration
+# Load up env vars for use by the pipelines
+direnv allow
 ```
 
 ### Startup the data stores
@@ -42,25 +44,8 @@ cd orchestration
 First, edit `orchestration/.env` and `dlt/.dlt/secrets.toml` to the values you desire.
 
 ```
-# Load up the pwd .env vars
-direnv allow
-# Create the bronze schema in duckdb
-duckdb /tmp/poc.duckdb
-CREATE SCHEMA bronze;
-.exit
-
 # Startup postgres
 docker-compose up
-```
-
-### Seed OLTP source data
-
-We use the chess.com dataset, since it is provided as a native source by DLT, but just as easily could use
-any open source REST API (via OpenAPI source) or dataset
-
-```
-# From the orchestration directory:
-python3 dlt_sources/pipeline_oltp_poc_chess.py
 ```
 
 ### Start Dagster
@@ -72,9 +57,43 @@ pip install -e ".[dev]"
 dagster dev
 ```
 
-You can not use the dagster UX to materialize seed data for the postgres OLTP data store from the chess API.  Once that is done, you can refresh assets to then load that same data into the data lake.
+You can now use the dagster UX to materialize data assets.
 
-## Addtional Commands For Reference
+## Development
+
+Open http://localhost:3000 with your browser to see the project.
+
+You can start writing assets in `orchestration/assets.py`. The assets are automatically loaded into the Dagster code location as you define them.
+
+### Adding New Python Dependencies
+
+You can specify new Python dependencies in `setup.py`.
+
+### Unit Testing
+
+Tests are in the `orchestration_tests` directory and you can run tests using `pytest`:
+
+```bash
+pytest orchestration_tests
+```
+
+### Schedules and Sensors
+
+If you want to enable Dagster [Schedules](https://docs.dagster.io/concepts/partitions-schedules-sensors/schedules) or [Sensors](https://docs.dagster.io/concepts/partitions-schedules-sensors/sensors) for your jobs, the [Dagster Daemon](https://docs.dagster.io/deployment/dagster-daemon) process must be running. This is done automatically when you run `dagster dev`.
+
+Once your Dagster Daemon is running, you can start turning on schedules and sensors for your jobs.
+
+## Deploy on Dagster Cloud
+
+The easiest way to deploy your Dagster project is to use Dagster Cloud.
+
+Check out the [Dagster Cloud Documentation](https://docs.dagster.cloud) to learn more.
+
+## Helpful Tools / Commands
+    * faker-cli: `pipx install faker-cli`
+    * browse duckdb: `duckdb /tmp/poc.duckdb`
+
+## Project Bootstrap Command History
 
 The following were used to bootstrap the project (no need to run them again):
 ```
@@ -107,36 +126,3 @@ rm *.py
 cd ..
 pip install -e ".[dev]"
 ```
-
-## Development
-
-Open http://localhost:3000 with your browser to see the project.
-
-You can start writing assets in `orchestration/assets.py`. The assets are automatically loaded into the Dagster code location as you define them.
-
-### Adding new Python dependencies
-
-You can specify new Python dependencies in `setup.py`.
-
-### Unit testing
-
-Tests are in the `orchestration_tests` directory and you can run tests using `pytest`:
-
-```bash
-pytest orchestration_tests
-```
-
-### Schedules and sensors
-
-If you want to enable Dagster [Schedules](https://docs.dagster.io/concepts/partitions-schedules-sensors/schedules) or [Sensors](https://docs.dagster.io/concepts/partitions-schedules-sensors/sensors) for your jobs, the [Dagster Daemon](https://docs.dagster.io/deployment/dagster-daemon) process must be running. This is done automatically when you run `dagster dev`.
-
-Once your Dagster Daemon is running, you can start turning on schedules and sensors for your jobs.
-
-## Deploy on Dagster Cloud
-
-The easiest way to deploy your Dagster project is to use Dagster Cloud.
-
-Check out the [Dagster Cloud Documentation](https://docs.dagster.cloud) to learn more.
-
-## Helpful Tools
-    * faker-cli: `pipx install faker-cli`
