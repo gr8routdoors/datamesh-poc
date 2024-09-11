@@ -48,24 +48,6 @@ dlt_pipeline           = pipeline(
 )
 dagster_dlt_translator = CanonicalDagsterDltTranslator(source_name, destination_name, db_name, schema_name)
 
-
-# @dlt_assets(
-#     dlt_source=sql_database(
-#         credentials=source_credentials,
-#         schema=schema_name,
-#         table_names=["players_profiles", "players_games"]
-#     ),
-#     dlt_pipeline=pipeline(
-#         pipeline_name=f"{db_name}__{schema_name}__{group_name}",
-#         dataset_name=schema_name,
-#         destination=destination,
-#         progress="log",
-#     ),
-#     name=f"{db_name}__{schema_name}__{group_name}",
-#     group_name=group_name,
-#     dagster_dlt_translator=CanonicalDagsterDltTranslator(source_name, destination_name, db_name, schema_name)
-# )
-
 asset_metadata = {
     constants.META_KEY_SOURCE: dlt_source,
     constants.META_KEY_PIPELINE: dlt_pipeline,
@@ -79,7 +61,7 @@ asset_tags     = {
 @multi_asset(
     name=f"{db_name}__{schema_name}__{group_name}",
     group_name=group_name,
-    compute_kind="duckdb",
+    compute_kind=destination_type,
     can_subset=True,
     specs=[
         AssetSpec(
