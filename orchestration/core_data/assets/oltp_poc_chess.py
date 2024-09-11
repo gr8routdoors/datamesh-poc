@@ -42,8 +42,10 @@ destination             = postgres(credentials=destination_credentials)
             # "anishgiri",
             # "vi_pranav",
             # "oleksandr_bortnyk",
-        ]
-    ),
+        ],
+        start_month="2024/01",
+        end_month="2024/08",
+    ).with_resources("players_profiles", "players_games"),
     dlt_pipeline=pipeline(
         pipeline_name=f"${db_name}__{schema_name}__{group_name}",
         dataset_name=schema_name,
@@ -54,10 +56,10 @@ destination             = postgres(credentials=destination_credentials)
     group_name=group_name,
     dagster_dlt_translator=ApiDagsterDltTranslator(source_name, destination_name, db_name, schema_name)
 )
-
 def dlt_asset_factory(context: AssetExecutionContext, dlt: DagsterDltResource):
     yield from dlt.run(context=context)
 
-chess_oltp_assets = [
-    SourceAsset(key, group_name=group_name) for key in dlt_asset_factory.dependency_keys
+# Correct the group name from `default` for upstream dependencies
+assets_chess_sources     = [
+    SourceAsset(key, group_name=source_name) for key in dlt_asset_factory.dependency_keys
 ]
