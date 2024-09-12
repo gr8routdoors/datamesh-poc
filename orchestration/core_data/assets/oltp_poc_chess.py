@@ -40,6 +40,7 @@ dlt_source              = source(
 ).with_resources("players_profiles", "players_games")
 
 destination_type             = "postgres"
+destination_dataset          = schema_name
 destination_name             = os.getenv("SOURCES__POC_DB__CREDENTIALS__DRIVERNAME")
 destination_username         = os.getenv("SOURCES__POC_DB__CREDENTIALS__USERNAME")
 destination_password         = os.getenv("SOURCES__POC_DB__CREDENTIALS__PASSWORD")
@@ -52,7 +53,7 @@ destination_players_games    = f"{destination_name}__{db_name}__{schema_name}__p
 
 dlt_pipeline           = pipeline(
     pipeline_name=f"${db_name}__{schema_name}__{group_name}",
-    dataset_name=schema_name,
+    dataset_name=destination_dataset,
     destination=destination,
     progress="log",
 )
@@ -72,21 +73,27 @@ asset_tags     = {
 @multi_asset(
     name=f"{db_name}__{schema_name}__{group_name}",
     group_name=group_name,
-    compute_kind=destination_type,
+    compute_kind="dlt",
     can_subset=True,
     specs=[
         AssetSpec(
             key=destination_players_profiles,
             skippable=True,
             deps=[source_players_profiles],
-            metadata=asset_metadata,
+            metadata={
+                "storage_location":f"{db_name}.{schema_name}.players_profiles",
+                **asset_metadata,
+            },
             tags=asset_tags,
         ),
         AssetSpec(
             key=destination_players_games, 
             skippable=True, 
             deps=[source_players_games],
-            metadata=asset_metadata,
+            metadata={
+                "storage_location":f"{db_name}.{schema_name}.players_games",
+                **asset_metadata,
+            },
             tags=asset_tags,
         ),
     ],

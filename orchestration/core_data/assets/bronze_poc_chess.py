@@ -33,20 +33,21 @@ dlt_source              = sql_database(
     table_names=["players_profiles", "players_games"]
 )
 
-destination_name             = "lake"
+destination_database         = "lake"
+destination_dataset          = "bronze"
 destination_type             = "duckdb"
 destination_credentials      = os.getenv("DESTINATION__LAKE__CREDENTIALS")
 destination                  = duckdb(credentials=destination_credentials)
-destination_players_profiles = f"{destination_name}__{db_name}__{schema_name}__players_profiles"
-destination_players_games    = f"{destination_name}__{db_name}__{schema_name}__players_games"
+destination_players_profiles = f"{destination_database}__{destination_dataset}__{schema_name}__players_profiles"
+destination_players_games    = f"{destination_database}__{destination_dataset}__{schema_name}__players_games"
 
 dlt_pipeline           = pipeline(
-    pipeline_name=f"{db_name}__{schema_name}__{group_name}",
-    dataset_name=schema_name,
+    pipeline_name=f"{destination_database}__{group_name}__{db_name}__{schema_name}",
+    dataset_name=destination_dataset,
     destination=destination,
     progress="log",
 )
-dagster_dlt_translator = CanonicalDagsterDltTranslator(source_name, destination_name, db_name, schema_name)
+dagster_dlt_translator = CanonicalDagsterDltTranslator(source_name, destination_dataset, db_name, schema_name)
 
 asset_metadata = {
     constants.META_KEY_SOURCE: dlt_source,
@@ -59,23 +60,29 @@ asset_tags     = {
 
 # We use multi_asset instead of dlt_assets because, as of this writing, dagster doesn't support chaining DLT pipelines (duplicate AssetKey error for upstream deps)
 @multi_asset(
-    name=f"{db_name}__{schema_name}__{group_name}",
+    name=f"{destination_database}__{group_name}__{db_name}__{schema_name}",
     group_name=group_name,
-    compute_kind=destination_type,
+    compute_kind="dlt",
     can_subset=True,
     specs=[
         AssetSpec(
             key=destination_players_profiles,
             skippable=True,
             deps=[source_players_profiles],
-            metadata=asset_metadata,
+            metadata={
+                "storage_location":f"{db_name}.{destination_dataset}.{schema_name}__players_profiles",
+                **asset_metadata,
+            },
             tags=asset_tags,
         ),
         AssetSpec(
             key=destination_players_games, 
             skippable=True, 
             deps=[source_players_games],
-            metadata=asset_metadata,
+            metadata={
+                "storage_location":f"{db_name}.{destination_dataset}.{schema_name}__players_games",
+                **asset_metadata,
+            },
             tags=asset_tags,
         ),
     ],

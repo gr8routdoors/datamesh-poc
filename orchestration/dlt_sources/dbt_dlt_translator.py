@@ -16,7 +16,7 @@ class CanonicalDagsterDltTranslator(DagsterDltTranslator):
     
     def get_asset_key(self, resource: DagsterDltResource) -> AssetKey:
         """Overrides asset key to be the dlt resource name."""
-        return AssetKey(f"{self.destination_name}__{self.database_name}__{self.schema_name}__{resource.name}")
+        return AssetKey(f"{self.database_name}__{self.destination_name}__{self.schema_name}__{resource.name}")
 
     def get_deps_asset_keys(self, resource: DagsterDltResource) -> Iterable[AssetKey]:
         """Overrides upstream asset key to be a single source asset."""

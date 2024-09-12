@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: lake
+    schema: bronze
+    tables:
+      - name: chess__players_profiles
+        meta:
+          dagster:
+            asset_key: ["lake__bronze__chess__players_profiles"]
+      - name: chess__players_games
+        meta:
+          dagster:
+            asset_key: ["lake__bronze__chess__players_games"]
+  - name: silver
+    database: lake
+    schema: silver
+    tables:
+      - name: chess__players_profiles
+      - name: chess__players_games
+  - name: gold
+    database: lake
+    schema: gold
+    tables:
+      - name: dim__chess__players
+      - name: fact__chess__games
