@@ -3,3 +3,6 @@ core_data.egg-info
 
 # dagster temp files
 tmp*
+
+# DBT files
+logs
