@@ -10,12 +10,14 @@ from ..projects import dbt_project
 
 
 class CustomDagsterDbtTranslator(DagsterDbtTranslator):
-    def get_group_name(self, dbt_resource_props: Mapping[str, Any]) -> Optional[str]:
+    def clean_schema_name(self, schema_name: str) -> str:
         # schema gets prefixed with `main_` in duckdb so we use the config instead
-        return dbt_resource_props["schema"]
+        return schema_name.removeprefix('main_')
+    def get_group_name(self, dbt_resource_props: Mapping[str, Any]) -> Optional[str]:
+        return self.clean_schema_name(dbt_resource_props["schema"])
     def get_asset_key(self, dbt_resource_props: Mapping[str, Any]) -> AssetKey:
         resource_database = dbt_resource_props["database"]
-        resource_schema = dbt_resource_props["schema"]
+        resource_schema = self.clean_schema_name(dbt_resource_props["schema"])
         resource_name = dbt_resource_props["name"]
         resource_type = dbt_resource_props["resource_type"]
 
@@ -28,8 +30,7 @@ class CustomDagsterDbtTranslator(DagsterDbtTranslator):
         ):
             return AssetKey(dbt_resource_props["meta"]["dagster"]["asset_key"])
 
-        return AssetKey([resource_database, resource_schema, resource_name])
-        # return AssetKey(f"{resource_database}__{resource_schema}__{resource_name}")
+        return AssetKey(f"{resource_database}__{resource_schema}__{resource_name}")
 
 @dbt_assets(
     manifest=dbt_project.manifest_path,

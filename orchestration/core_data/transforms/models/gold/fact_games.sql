@@ -1,4 +1,4 @@
--- For the sake of time, not bothering to perform any typical silver layer cleanup
+-- For the sake of time, not bothering to perform the typical star modeling
 {{ 
     config(
         materialized='incremental',
@@ -9,7 +9,7 @@
 select
     *
 
-from {{ source('silver', 'chess_players_games') }}
+from {{ ref('players_games') }}
 
 {% if is_incremental() %}
 

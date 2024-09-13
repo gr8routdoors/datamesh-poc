@@ -13,15 +13,3 @@ sources:
         meta:
           dagster:
             asset_key: ["bronze__players_games"]
-  - name: silver
-    database: lake
-    schema: silver
-    tables:
-      - name: players_profiles
-      - name: players_games
-  - name: gold
-    database: lake
-    schema: gold
-    tables:
-      - name: dim__players
-      - name: fact__games
