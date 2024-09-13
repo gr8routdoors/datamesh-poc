@@ -1,0 +1,15 @@
+transforms:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DESTINATION__LAKE__FILE') }}"
+      # extensions:
+      #   - parquet
+      # filesystems:
+      #   - fs: s3
+      #     anon: false
+      #     key: "{{ env_var('S3_ACCESS_KEY_ID') }}"
+      #     secret: "{{ env_var('S3_SECRET_ACCESS_KEY') }}"
+      #     client_kwargs:
+      #       endpoint_url: "http://localhost:4566"
