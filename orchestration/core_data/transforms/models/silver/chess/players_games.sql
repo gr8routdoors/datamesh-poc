@@ -3,4 +3,4 @@
 select
     *
 
-from {{ source('bronze', 'chess__players_games') }}
+from {{ source('bronze', 'players_games') }}

@@ -14,16 +14,31 @@ class CustomDagsterDbtTranslator(DagsterDbtTranslator):
         # schema gets prefixed with `main_` in duckdb so we use the config instead
         return dbt_resource_props["schema"]
     def get_asset_key(self, dbt_resource_props: Mapping[str, Any]) -> AssetKey:
-        return AssetKey(f"{dbt_resource_props["database"]}__{dbt_resource_props["schema"]}__{dbt_resource_props["name"]}")
+        resource_database = dbt_resource_props["database"]
+        resource_schema = dbt_resource_props["schema"]
+        resource_name = dbt_resource_props["name"]
+        resource_type = dbt_resource_props["resource_type"]
+
+        # if metadata has been provided in the yaml use that, otherwise construct key
+        if (
+            resource_type == "source"
+            and "meta" in dbt_resource_props
+            and "dagster" in dbt_resource_props["meta"]
+            and "asset_key" in dbt_resource_props["meta"]["dagster"]
+        ):
+            return AssetKey(dbt_resource_props["meta"]["dagster"]["asset_key"])
+
+        return AssetKey([resource_database, resource_schema, resource_name])
+        # return AssetKey(f"{resource_database}__{resource_schema}__{resource_name}")
 
 @dbt_assets(
     manifest=dbt_project.manifest_path,
     dagster_dbt_translator=CustomDagsterDbtTranslator(),
 )
-def transforms_assets(context: AssetExecutionContext, dbt: DbtCliResource):
-    yield from dbt.cli(["build"], context=context).stream()
-
-# Correct the group name from `default` for upstream dependencies
-assets_chess_sources     = [
-    SourceAsset(key, group_name="bronze") for key in transforms_assets.dependency_keys
-]
+def dbt_non_partitioned_models(context: AssetExecutionContext, dbt: DbtCliResource):
+    yield from (
+        dbt.cli(["build"], context=context)
+        .stream()
+        .fetch_row_counts()
+        .fetch_column_metadata()
+    )

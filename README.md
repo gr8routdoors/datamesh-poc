@@ -115,14 +115,21 @@ cd dlt_sources
 dlt init chess postgres
 dlt init sql_database duckdb
 # Manual: move the dependencies from dlt/requirements.txt into setup.py
-# Manual: port DLT secrets.tom into .env file, and then wire into Dagster assets
+# Manual: port DLT secrets.toml into .env file, and then wire into Dagster assets
 
 # Get rid of unused DLT files to avoid confusion
 rm requirements.txt
 rm -rf .dlt
 rm *.py
 
-# Install dlt dependencies
+# Install dlt added dependencies
 cd ..
 pip install -e ".[dev]"
+
+# Setup DBT
+cd core_data
+dbt init transforms
+
+# Manual: configure DBT project, profiles, sources, and models per DBT docs
+# Manual: configure Dagster and DBT integration per Dagster docs
 ```
