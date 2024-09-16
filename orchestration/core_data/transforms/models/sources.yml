@@ -1,15 +1,15 @@
 version: 2
 
 sources:
-  - name: bronze
+  - name: raw
     database: lake
-    schema: bronze
+    schema: raw
     tables:
       - name: players_profiles
         meta:
           dagster:
-            asset_key: ["bronze__players_profiles"]
+            asset_key: ["raw__players_profiles"]
       - name: players_games
         meta:
           dagster:
-            asset_key: ["bronze__players_games"]
+            asset_key: ["raw__players_games"]

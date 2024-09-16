@@ -1,6 +1,7 @@
 -- For the sake of time, not bothering to perform the typical star modeling
 {{ 
     config(
+        alias='dim_players',
         materialized='incremental',
         unique_key = 'player_id',
     )
@@ -9,7 +10,7 @@
 select
     *
 
-from {{ ref('players_profiles') }}
+from {{ ref('silver_players_profiles') }}
 
 {% if is_incremental() %}
 

@@ -33,10 +33,10 @@ dlt_source              = sql_database(
     table_names=["players_profiles", "players_games"]
 )
 
-destination_group_name       = "bronze"
+destination_group_name       = "raw"
 destination_name             = "duckdb"
 destination_database         = "lake"
-destination_schema           = "bronze"
+destination_schema           = "raw"
 destination_credentials      = os.getenv("DESTINATION__LAKE__CREDENTIALS")
 dlt_destination              = duckdb(credentials=destination_credentials)
 

@@ -1,6 +1,7 @@
 -- For the sake of time, not bothering to perform the typical star modeling
 {{ 
     config(
+        alias='fact_games',
         materialized='incremental',
         unique_key = 'uuid',
     )
@@ -9,7 +10,7 @@
 select
     *
 
-from {{ ref('players_games') }}
+from {{ ref('silver_players_games') }}
 
 {% if is_incremental() %}
 
